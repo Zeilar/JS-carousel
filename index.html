@@ -6,6 +6,7 @@
     "crossorigin="anonymous"
     >
     </script>
+    <script src="//code.jquery.com/mobile/1.5.0-alpha.1/jquery.mobile-1.5.0-alpha.1.min.js"></script>
 </head>
 
 <h1>Test</h1>
@@ -53,62 +54,66 @@
     body {
         margin: 0;
         background: gray;
+        touch-action: manipulation;
     }
-
     button {
         width: 100px;
         height: 100px;
         margin: 50px;
     }
-
     .carousel {
         display: flex;
         height: 30vh;
-        width: 10%;
         border: 1px solid blue;
         align-items: center;
         position: relative;
+        overflow: hidden;
     }
-
     .carousel .wrapper {
         transition: left 0.2s linear;
-        width: 100%;
+        width: 50%;
         height: 50%;
         text-align: center;
         border: 1px solid red;
         position: absolute;
     }
+
+    .swiped {
+        color: yellow;
+        background: blue;
+    }
+
+    
 </style>
 
 <script>
     initCarousel();
-
     $('.previous').click(function() {
         carouselSlide('previous');
     });
-
     $('.next').click(function() {
         carouselSlide('next');
     });
-
+    
     function initCarousel() {
-        $('.carousel').children().each(function(i) {
+        let carouselOffset = -125;
+        $('.carousel').children().each(function() {
+            carouselOffset += 50;
+            console.log('jQuery: ', carouselOffset);
             $(this).attr({
-                'style': `left: ${(i * 10 - 10)}vw`,
-            });
+                'style': `left: ${(carouselOffset)}vw`,
+            });            
         });
     }
-
     function carouselSlide(direction = '') {
         if (direction == 'next') {
             console.log('direction = ', direction);
             let firstChild = $('.carousel > div:first-child');
             firstChild.remove();
             $('.carousel').append(firstChild);
-            $('.carousel > div:last-child').attr('style', `left: ${$('.carousel').children().length * 10 - 10}vw`);
-
+            $('.carousel > div:last-child').attr('style', `left: ${$('.carousel').children().length * 50 - 75}vw`);
             $('.carousel').children().each(function() {
-                let left = parseInt($(this).attr('style').slice(6, -2)) - 10;
+                let left = parseInt($(this).attr('style').slice(6, -2)) - 50;
                 $(this).css('left', `${left}vw`);
             });
         } else if (direction == 'previous') {
@@ -116,15 +121,25 @@
             let lastChild = $('.carousel > div:last-child');
             lastChild.remove();
             $('.carousel').prepend(lastChild);
-            $('.carousel > div:first-child').attr('style', 'left: -10vw;');
-
+            $('.carousel > div:first-child').attr('style', `left: ${-75}vw;`);
             $('.carousel').children().not(lastChild).each(function() {
-                let left = parseInt($(this).attr('style').slice(6, -2)) + 10;
+                let left = parseInt($(this).attr('style').slice(6, -2)) + 50;
                 $(this).css('left', `${left}vw`);
             });
         } else {
-            return carouselSlide('next');
+            carouselSlide('next');
         }
     }
+
+    $('.carousel').on('swiperight', function() {
+        carouselSlide('previous');
+        console.log('swiperight');
+    });
+
+    $('.carousel').on('swipeleft', function() {
+        carouselSlide('next');
+        console.log('swipeleft');
+    });
+
 </script>
 </html>
